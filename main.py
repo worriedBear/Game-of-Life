@@ -18,7 +18,7 @@ def main():
 
     while _count_living_cells_(state):
         _print_state_(state)
-        _update_state_(state)
+        _update_state_(state)                      
         sleep(TIME_BETWEEN_PRINTS)
 
     _print_state_(state)
