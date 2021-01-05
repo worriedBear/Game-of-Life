@@ -1,9 +1,11 @@
 from copy import deepcopy
-from random import randint
+from random import random
 
-FIELD_SIZE = 15
-SIMULATION_LENGTH = 100
-NUMBER_OF_SIMULATIONS = 20
+FIELD_SIZE = 10
+FIELD_DENSITY = 0.1
+SIMULATION_LENGTH = 10
+NUMBER_OF_SIMULATIONS = 10
+FILE_NAME = "simulations.txt"
 
 UNDERPOPULATION_LOWER_BOUNDARY = 2
 UNDERPOPULATION_UPPER_BOUNDARY = 3
@@ -11,8 +13,10 @@ REPRODUCTION_BOUNDARY = 3
 
 
 def main():
-    file = open("simulations.txt", "a+")
+    _ask_user_for_simulation_details_()
+    file = open(FILE_NAME, "a+")
 
+    print("Working on it....")
     for simulation_index in range(NUMBER_OF_SIMULATIONS):
         _simulate_single_run_(simulation_index, file)
 
@@ -94,7 +98,10 @@ def _append_state_to_file_(state, file):
 def _initialize_randomly_(state):
     for row_index in range(FIELD_SIZE):
         for col_index in range(FIELD_SIZE):
-            state[row_index][col_index] = randint(0, 1)
+            if random() < FIELD_DENSITY:
+                state[row_index][col_index] = 1
+            else:
+                state[row_index][col_index] = 0
 
 
 def _initialize_blinker_(state, starting_row, starting_col):
@@ -106,7 +113,7 @@ def _initialize_blinker_(state, starting_row, starting_col):
 def _initialize_cool_figure_(state, starting_row, starting_col):
     state[starting_row][starting_col + 1] = 1
     state[starting_row + 1][starting_col + 1] = 1
-    state[starting_row][starting_col +2] = 1
+    state[starting_row][starting_col + 2] = 1
     state[starting_row + 1][starting_col] = 1
     state[starting_row + 2][starting_col + 1] = 1
 
@@ -190,6 +197,66 @@ def _count_neighbors_(old_state, row_index, col_index):
         number_neighbors += old_state[row_index][col_index + 1]
 
     return number_neighbors
+
+
+def _ask_user_for_simulation_details_():
+    global FIELD_SIZE, SIMULATION_LENGTH, NUMBER_OF_SIMULATIONS, FIELD_DENSITY, FILE_NAME
+
+    valid_input = False
+    while not valid_input:
+        print("Enter size of the board(1 < size <= 50):")
+        FIELD_SIZE = input()
+        if FIELD_SIZE.isnumeric() and 1 < int(FIELD_SIZE) <= 50:
+            valid_input = True
+        else:
+            print("INVALID INPUT....try again :/")
+
+    valid_input = False
+    while not valid_input:
+        print("Enter maximal length of a single simulation(1 < size <= 500):")
+        SIMULATION_LENGTH = input()
+        if SIMULATION_LENGTH.isnumeric() and 1 < int(SIMULATION_LENGTH) <= 500:
+            valid_input = True
+        else:
+            print("INVALID INPUT....try again :/")
+
+    valid_input = False
+    while not valid_input:
+        print("Enter the number of simulations to be executed(0 < size <= 200):")
+        NUMBER_OF_SIMULATIONS = input()
+        if NUMBER_OF_SIMULATIONS.isnumeric() and 0 < int(NUMBER_OF_SIMULATIONS) <= 200:
+            valid_input = True
+        else:
+            print("INVALID INPUT....try again :/")
+
+    valid_input = False
+    while not valid_input:
+        print("Enter the density of the starting-population(0 < density < 100):")
+        print("(A higher density means that each respective "
+              "cell is more likely to be initialised alive)")
+        FIELD_DENSITY = input()
+        if FIELD_DENSITY.isnumeric() and 0 < int(FIELD_DENSITY) < 100:
+            valid_input = True
+        else:
+            print("INVALID INPUT....try again :/")
+
+    FIELD_SIZE = int(FIELD_SIZE)
+    SIMULATION_LENGTH = int(SIMULATION_LENGTH)
+    NUMBER_OF_SIMULATIONS = int(NUMBER_OF_SIMULATIONS)
+    FIELD_DENSITY = float(FIELD_DENSITY) / float(100)
+
+    valid_input = False
+    while not valid_input:
+        print("Enter the name of the file in which the results will be stored:")
+        print("(Don't add a >>.txt<< in the end, as it is added by default :))")
+        print("The name may only consist of letters")
+        FILE_NAME = input()
+        if FILE_NAME.isalpha():
+            valid_input = True
+        else:
+            print("INVALID INPUT....try again :/")
+
+    FILE_NAME = FILE_NAME + ".txt"
 
 
 if __name__ == '__main__':
